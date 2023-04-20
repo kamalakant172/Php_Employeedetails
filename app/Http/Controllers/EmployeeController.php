@@ -18,7 +18,7 @@ class EmployeeController extends Controller
     public function index()
     {
         //
-        $employees = Employee::all();
+        $employees = Employee::all()->sortBy('firstname');
         return response([ 'employees' => 
         EmployeeResource::collection($employees), 
         'message' => 'Get List Employee'], 200);
@@ -93,4 +93,16 @@ class EmployeeController extends Controller
 
         return response(['message' => 'Employee deleted']);
     }
+
+    // search the specific resource from storage.
+    public function search($firstname){
+        $result= Employee:: where('firstname', 'LIKE', '%'.$firstname.'%')-> get();
+        if (count($result)){
+            return response()-> json($result);
+        }
+        else{
+            return response()->json(['Result' => 'No Data not found'], 404);
+        }
+    }
+
 }
