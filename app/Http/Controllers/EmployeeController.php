@@ -15,13 +15,38 @@ class EmployeeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         //
-        $employees = Employee::all()->sortBy('firstname');
-        return response([ 'employees' => 
-        EmployeeResource::collection($employees), 
-        'message' => 'Get List Employee'], 200);
+        
+        
+       
+        if($request->firstname){
+            $employees= $request->get('employees');
+            $employees= Employee::where('firstname', 'LIKE', '%'.$request->firstname.'%')->get();
+            return response()->json(['message' => 'Get Search Employee','data'=> $employees], 200);
+        }
+        else{
+            $employees = Employee::all();
+            return response([ 'employees' => 
+            EmployeeResource::collection($employees), 
+            'message' => 'Get List Employee'], 200);
+        }
+        if ($request->sortBy && in_array($request->sortBy, ['id', 'created_at'])){
+            $sortBy= $request->sortBy;
+        }
+        else{
+            $sortBy='id';
+        }
+        if ($request->sortOrder && in_array($request->sortOrder, ['asc', 'desc'])){
+            $sortOrder= $request->sortOrder;
+        }
+        else{
+            $sortOrder='desc';
+        }
+        $employees= Employee::orderBy($sortBy, $sortOrder)->get();
+        return response()->json(['message' => 'Get Sorted Employee','data'=>$employees]);
+        
     }
 
     /**
@@ -94,15 +119,21 @@ class EmployeeController extends Controller
         return response(['message' => 'Employee deleted']);
     }
 
-    // search the specific resource from storage.
-    public function search($firstname){
-        $result= Employee:: where('firstname', 'LIKE', '%'.$firstname.'%')-> get();
-        if (count($result)){
-            return response()-> json($result);
-        }
-        else{
-            return response()->json(['Result' => 'No Data not found'], 404);
-        }
-    }
+    //search the specific resource from storage.
+    // public function search(Request $request){
+    //     if($request->keyword){
+    //         $employee= Employee::where('firstname', 'LIKE', '%'.$request->keyword.'%')->get();
+    //         return response([ 'employee' => new 
+    //         EmployeeResource($employee), 'message' => 'Get search Employee'], 200);
+    //     }
+        
+        // if (count($employee)){
+        // return response()-> json($employee);
+        // }
+        // else{
+        //     return response()->json(['Result' => 'No Data not found'], 404);
+        // }
+    // }    
+    
 
 }
