@@ -19,11 +19,13 @@ class EmployeeController extends Controller
     {
         //
         
+        if($request->q &&  ($request->sort_dir && in_array($request->sort_dir, ['asc', 'desc']) ) && ($request->sort_by && in_array($request->sort_by, ['firstname', 'lastname']))){
 
-        if($request->q){
+           $sort_dir= $request->sort_dir;
+           $sort_by= $request->sort_by;
            
             $employees= Employee::where('firstname', 'LIKE', '%'.$request->q.'%')
-            -> orwhere('lastname', 'LIKE', '%'.$request->q.'%')->get();
+            -> orwhere('lastname', 'LIKE', '%'.$request->q.'%')->orderBy($sort_by, $sort_dir)->get();
             
             return response()->json(['message' => 'Get Search Employee','data'=> $employees], 200);
         }
@@ -33,12 +35,7 @@ class EmployeeController extends Controller
             EmployeeResource::collection($employees), 
             'message' => 'Get List Employee'], 200);
         }
-        
-        
-
-       
-        
-        
+         
      }
 
     /**
