@@ -19,9 +19,11 @@ class EmployeeController extends Controller
     {
         //
         
-        if($request->q ){
-            
-            $employees= Employee::where('firstname', 'LIKE', '%'.$request->q.'%')->get();
+
+        if($request->q){
+           
+            $employees= Employee::where('firstname', 'LIKE', '%'.$request->q.'%')
+            -> orwhere('lastname', 'LIKE', '%'.$request->q.'%')->get();
             
             return response()->json(['message' => 'Get Search Employee','data'=> $employees], 200);
         }
@@ -31,6 +33,10 @@ class EmployeeController extends Controller
             EmployeeResource::collection($employees), 
             'message' => 'Get List Employee'], 200);
         }
+        
+        
+
+       
         
         
      }
