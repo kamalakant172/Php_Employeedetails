@@ -19,11 +19,10 @@ class EmployeeController extends Controller
     {
         //
         
-        
-       
-        if($request->firstname){
-            $employees= $request->get('employees');
-            $employees= Employee::where('firstname', 'LIKE', '%'.$request->firstname.'%')->get();
+        if($request->q ){
+            
+            $employees= Employee::where('firstname', 'LIKE', '%'.$request->q.'%')->get();
+            
             return response()->json(['message' => 'Get Search Employee','data'=> $employees], 200);
         }
         else{
@@ -32,22 +31,9 @@ class EmployeeController extends Controller
             EmployeeResource::collection($employees), 
             'message' => 'Get List Employee'], 200);
         }
-        if ($request->sortBy && in_array($request->sortBy, ['id', 'created_at'])){
-            $sortBy= $request->sortBy;
-        }
-        else{
-            $sortBy='id';
-        }
-        if ($request->sortOrder && in_array($request->sortOrder, ['asc', 'desc'])){
-            $sortOrder= $request->sortOrder;
-        }
-        else{
-            $sortOrder='desc';
-        }
-        $employees= Employee::orderBy($sortBy, $sortOrder)->get();
-        return response()->json(['message' => 'Get Sorted Employee','data'=>$employees]);
         
-    }
+        
+     }
 
     /**
      * Store a newly created resource in storage.
