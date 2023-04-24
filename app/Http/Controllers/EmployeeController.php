@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\EmployeeResource;
 use Illuminate\Support\Facades\Validator;
+// use Cache;
+use Illuminate\Support\Facades\Cache as FacadesCache;
 
 class EmployeeController extends Controller
 {
@@ -19,18 +21,34 @@ class EmployeeController extends Controller
     {
         //
         
+        $employeedetails = FacadesCache::get('Employeedetails-1');
+
+        if(isset($employeedetails)) {
+            $employees = json_decode($employeedetails);
+
+            return response()->json([
+                'status_code' => 201,
+                'message' => 'Fetched from redis',
+                'data' => $employees,
+            ]);
+        }
+    
+        
         if($request->q &&  ($request->sort_dir && in_array($request->sort_dir, ['asc', 'desc']) ) && ($request->sort_by && in_array($request->sort_by, ['firstname', 'lastname']))){
 
            $sort_dir= $request->sort_dir;
            $sort_by= $request->sort_by;
            
-            $employees= Employee::where('firstname', 'LIKE', '%'.$request->q.'%')
+            $search_employees= Employee::where('firstname', 'LIKE', '%'.$request->q.'%')
             -> orwhere('lastname', 'LIKE', '%'.$request->q.'%')->orderBy($sort_by, $sort_dir)->get();
+
+            FacadesCache::put("Employeedetails", $search_employees, 3600);
             
-            return response()->json(['message' => 'Get Search Employee','data'=> $employees], 200);
+            return response()->json(['message' => 'Get Search Employee','data'=> $search_employees], 200);
         }
         else{
             $employees = Employee::all();
+            FacadesCache::put("Employeedetails-1", $employees, 3600);
             return response([ 'employees' => 
             EmployeeResource::collection($employees), 
             'message' => 'Get List Employee'], 200);
@@ -108,21 +126,6 @@ class EmployeeController extends Controller
         return response(['message' => 'Employee deleted']);
     }
 
-    //search the specific resource from storage.
-    // public function search(Request $request){
-    //     if($request->keyword){
-    //         $employee= Employee::where('firstname', 'LIKE', '%'.$request->keyword.'%')->get();
-    //         return response([ 'employee' => new 
-    //         EmployeeResource($employee), 'message' => 'Get search Employee'], 200);
-    //     }
-        
-        // if (count($employee)){
-        // return response()-> json($employee);
-        // }
-        // else{
-        //     return response()->json(['Result' => 'No Data not found'], 404);
-        // }
-    // }    
     
 
 }

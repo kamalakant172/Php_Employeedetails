@@ -18,7 +18,8 @@ use App\Http\Controllers\Auth\UserAuthController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route ::apiResource('employees', EmployeeController::class)->middleware('auth:api');
+Route::apiResource('employees', EmployeeController::class)->middleware('auth:api');
 Route::post('register', [UserAuthController::class, 'register']);
 Route::post('login', [UserAuthController::class, 'login']);
 // Route::get('search/{}',[EmployeeController::class, 'search'])->middleware('auth:api');
+// Route::get('/list', [EmployeeController::class, 'listemployee']);
