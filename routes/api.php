@@ -4,6 +4,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\Auth\UserAuthController;
+use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\AuthPostController;
+use App\Http\Controllers\BookController;
+use App\Http\Controllers\RatingController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -23,3 +28,6 @@ Route::post('register', [UserAuthController::class, 'register']);
 Route::post('login', [UserAuthController::class, 'login']);
 // Route::get('search/{}',[EmployeeController::class, 'search'])->middleware('auth:api');
 // Route::get('/list', [EmployeeController::class, 'listemployee']);
+Route::apiResource('books', BookController::class)->middleware('auth:api');
+// Route::apiResource('ratings', RatingController::class)->middleware('auth:api');
+Route::post('books/{book}/ratings', [RatingController::class, 'store'])->middleware('auth:api');

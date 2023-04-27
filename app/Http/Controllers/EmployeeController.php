@@ -9,6 +9,7 @@ use App\Http\Resources\EmployeeResource;
 use Illuminate\Support\Facades\Validator;
 // use Cache;
 use Illuminate\Support\Facades\Cache as FacadesCache;
+use Illuminate\Support\Facades\Redis;
 
 class EmployeeController extends Controller
 {
@@ -19,10 +20,15 @@ class EmployeeController extends Controller
      */
     public function index(Request $request)
     {
-        //
         
-        $employeedetails = FacadesCache::get('Employeedetails-1');
+        $url = request()->url();
+        $queryParams = request()->query();
+        ksort($queryParams);
+        $queryString = http_build_query($queryParams);
+        $fullUrl = "{$url}?{$queryString}";
 
+        
+        $employeedetails = FacadesCache::get($fullUrl);
         if(isset($employeedetails)) {
             $employees = json_decode($employeedetails);
 
@@ -42,13 +48,13 @@ class EmployeeController extends Controller
             $search_employees= Employee::where('firstname', 'LIKE', '%'.$request->q.'%')
             -> orwhere('lastname', 'LIKE', '%'.$request->q.'%')->orderBy($sort_by, $sort_dir)->get();
 
-            FacadesCache::put("Employeedetails", $search_employees, 3600);
+            FacadesCache::put($fullUrl, $search_employees, 3600);
             
             return response()->json(['message' => 'Get Search Employee','data'=> $search_employees], 200);
         }
         else{
             $employees = Employee::all();
-            FacadesCache::put("Employeedetails-1", $employees, 3600);
+            FacadesCache::put($fullUrl, $employees, 3600);
             return response([ 'employees' => 
             EmployeeResource::collection($employees), 
             'message' => 'Get List Employee'], 200);
