@@ -13,13 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('ratings', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('book_id')->unsigned();
-            $table->unsignedInteger('rating');
-            $table->foreign('book_id')->references('id')->on('books')->onDelete('cascade');
-            $table->timestamps();
-        });
+        if(!Schema::hasTable('ratings')){
+            Schema::create('ratings', function (Blueprint $table) {
+                $table->id();
+                
+                $table->unsignedInteger('rating');
+                // $table->foreign('book_id')->references('id')->on('books')->onDelete('cascade');
+                $table->unsignedBigInteger('book_id')->unsigned();
+                $table->foreign('book_id')->constrained('books');
+                $table->timestamps();
+                });
+        }    
     }
 
     /**

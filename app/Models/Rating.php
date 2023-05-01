@@ -4,16 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Book;
 
 class Rating extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['book_id','rating'];
+    protected $fillable = ['rating', 'book_id'];
 
 
 
-    public function book(){
+    public function books(){
         return $this->belongsTo(Book::class);
     }
 }

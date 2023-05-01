@@ -10,16 +10,36 @@ use App\Http\Resources\RatingResource;
 class RatingController extends Controller
 {
     //
-    public function store(Request $request, Book $book)
-    {
-      $rating = Rating::updateOrCreate(
-        [
-        
-          'book_id' => $book->id,
-        ],
-        ['rating' => $request->rating]
-      );
+    protected $model;
 
-      return new RatingResource($rating);
+    public function __construct(Rating $rating)
+    {
+        $this->model = $rating;
+    }
+    public function index()
+    {
+        //
+        $items = $this->model->with('books')->get();
+        return response(['data' => $items, 'status' => 200]);
+    }
+    public function store(Request $request)
+    {
+    
+
+      $request->validate([
+        'rating' => 'required',
+        // 'books' => 'array',
+        'books.*' => 'exists:books,id'
+      ]);
+      $item = $this->model->create($request->all());
+
+      $books = $request->get('books');
+      $item->books()->associate($books);
+
+      return $this->index();
+            
+        
+       
+       
     }
 }

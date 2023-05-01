@@ -7,6 +7,8 @@ use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\AuthPostController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RatingController;
 
 /*
@@ -26,8 +28,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::apiResource('employees', EmployeeController::class)->middleware('auth:api');
 Route::post('register', [UserAuthController::class, 'register']);
 Route::post('login', [UserAuthController::class, 'login']);
-// Route::get('search/{}',[EmployeeController::class, 'search'])->middleware('auth:api');
-// Route::get('/list', [EmployeeController::class, 'listemployee']);
+
 Route::apiResource('books', BookController::class)->middleware('auth:api');
-// Route::apiResource('ratings', RatingController::class)->middleware('auth:api');
-Route::post('books/{book}/ratings', [RatingController::class, 'store'])->middleware('auth:api');
+Route::apiResource('ratings', RatingController::class)->middleware('auth:api');
+// Route::post('books/{book}/ratings', [RatingController::class, 'store'])->middleware('auth:api');
+Route::apiResource('products', ProductController::class)->middleware('auth:api');
+Route::apiResource('categories', CategoryController::class)->middleware('auth:api');
+

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Rating;
 
 class Book extends Model
 {
@@ -12,8 +13,8 @@ class Book extends Model
     protected $fillable = ['title', 'description'];
 
     public function ratings(){
-        return $this->hasMany(Rating::class);
+        return $this->hasMany(Rating::class, 'book_id');
         
-        // return $this->hasOne(Rating::class);
+        
     }
 }
